@@ -162,7 +162,18 @@ export function resolveModuleName({
 	if (!matched) {
 		const result = ts.resolveModuleName(request, importer, compilerOptions, host)
 		if (result?.resolvedModule && result.resolvedModule.resolvedFileName.indexOf("node_modules/") === -1) {
-			return { name: result.resolvedModule.resolvedFileName, isNodeModules: false }
+			let name = result.resolvedModule.resolvedFileName
+			if (name.endsWith(".d.ts")) {
+				const extensions = [".js", ".jsx"]
+				for (let i = 0; i < extensions.length; i++) {
+					const guess = name.replace(/\.d\.ts$/, extensions[i])
+					if (fs.existsSync(guess)) {
+						return { name: guess, isNodeModules: false }
+					}
+				}
+				return undefined
+			}
+			return { name, isNodeModules: false }
 		}
 		return undefined
 	}
