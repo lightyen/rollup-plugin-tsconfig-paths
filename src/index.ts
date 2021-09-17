@@ -58,7 +58,7 @@ export function createMappings({
 	logLevel?: "warn" | "debug" | "none"
 	pluginName?: string
 }): Mapping[] {
-	const countWildcard = (value: string) => value.match(/\*/g)?.length
+	const countWildcard = (value: string) => value.match(/\*/g)?.length ?? 0
 	const valid = (value: string) => /(\*|\/\*|\/\*\/)/.test(value)
 
 	const mappings: Mapping[] = []
@@ -145,6 +145,10 @@ export function findMatch(moduleName: string, mappings: Mapping[]): Mapping | un
 	return matched
 }
 
+export function containNodeModules(path: string) {
+	return path.indexOf("/node_modules/") !== -1
+}
+
 export function resolveModuleName({
 	mappings,
 	request,
@@ -157,47 +161,55 @@ export function resolveModuleName({
 	request: string
 	importer: string
 	host: ts.ModuleResolutionHost
-}): { name: string; isNodeModules: boolean } | undefined {
+}): { moduleName?: string; isNodeModules?: boolean; pattern?: Mapping; target?: string } {
 	const matched = findMatch(request, mappings)
 	if (!matched) {
 		const result = ts.resolveModuleName(request, importer, compilerOptions, host)
-		if (result?.resolvedModule && result.resolvedModule.resolvedFileName.indexOf("node_modules/") === -1) {
-			let name = result.resolvedModule.resolvedFileName
-			if (name.endsWith(".d.ts")) {
+		if (result?.resolvedModule) {
+			const resolvedModuleName = result.resolvedModule.resolvedFileName
+			const isNodeModules = containNodeModules(resolvedModuleName)
+			if (resolvedModuleName.endsWith(".d.ts")) {
 				const extensions = [".js", ".jsx"]
 				for (let i = 0; i < extensions.length; i++) {
-					const guess = name.replace(/\.d\.ts$/, extensions[i])
+					const guess = resolvedModuleName.replace(/\.d\.ts$/, extensions[i])
 					if (fs.existsSync(guess)) {
-						return { name: guess, isNodeModules: false }
+						return { moduleName: guess, isNodeModules }
 					}
 				}
-				return undefined
+				return {}
 			}
-			return { name, isNodeModules: false }
+			return { moduleName: isNodeModules ? request : resolvedModuleName, isNodeModules }
 		}
-		return undefined
+		return {}
 	}
 
 	const matchedWildcard = request.slice(matched.prefix.length, request.length - matched.suffix.length)
 
 	for (const target of matched.targets) {
 		const updated = matched.wildcard ? target.replace("*", matchedWildcard) : target
-		const moduleName = path.resolve(compilerOptions.baseUrl, updated)
-		if (moduleName.indexOf("node_modules/") !== -1) {
-			return { name: moduleName, isNodeModules: true }
+		const moduleName = path.resolve(compilerOptions.baseUrl!, updated)
+		const isNodeModules = containNodeModules(moduleName)
+		if (isNodeModules) {
+			return { moduleName, isNodeModules, pattern: matched, target }
 		}
 		// NOTE: resolve module path with typescript API
 		const result = ts.resolveModuleName(moduleName, importer, compilerOptions, host)
 		if (result?.resolvedModule) {
-			return { name: result.resolvedModule.resolvedFileName, isNodeModules: false }
+			const resolvedModuleName = result.resolvedModule.resolvedFileName
+			return {
+				moduleName: resolvedModuleName,
+				isNodeModules,
+				pattern: matched,
+				target,
+			}
 		}
 		// NOTE: For those are not modules, ex: css, fonts...etc.
 		if (fs.existsSync(moduleName)) {
-			return { name: moduleName, isNodeModules: false }
+			return { moduleName: moduleName, isNodeModules: false, pattern: matched, target }
 		}
 	}
 
-	return undefined
+	return { pattern: matched }
 }
 
 export default function tsConfigPaths({
@@ -208,20 +220,20 @@ export default function tsConfigPaths({
 		console.log(formatLog("info", PLUGIN_NAME, `typescript version: ${ts.version}`))
 	}
 	let compilerOptions = getTsConfig(tsConfigPath, PLUGIN_NAME, ts.sys)
-	let mappings = createMappings({ paths: compilerOptions.paths, logLevel, pluginName: PLUGIN_NAME })
+	let mappings = createMappings({ paths: compilerOptions.paths!, logLevel, pluginName: PLUGIN_NAME })
 	return {
 		name: PLUGIN_NAME,
 		buildStart() {
 			compilerOptions = getTsConfig(tsConfigPath, PLUGIN_NAME, ts.sys)
-			mappings = createMappings({ paths: compilerOptions.paths, logLevel, pluginName: PLUGIN_NAME })
-			return null
+			mappings = createMappings({ paths: compilerOptions.paths!, logLevel, pluginName: PLUGIN_NAME })
+			return
 		},
-		async resolveId(importee: string, importer: string) {
+		async resolveId(importee: string, importer?: string) {
 			if (!importer || importee.startsWith("\0")) {
 				return null
 			}
 
-			const moduleName = resolveModuleName({
+			const { isNodeModules, target, moduleName } = resolveModuleName({
 				compilerOptions,
 				mappings,
 				request: importee,
@@ -232,7 +244,7 @@ export default function tsConfigPaths({
 			if (!moduleName) {
 				// fallback
 				return this.resolve(importee, importer, { skipSelf: true }).then(resolved => {
-					let finalResult: PartialResolvedId = resolved
+					let finalResult: PartialResolvedId | null = resolved
 					if (!finalResult) {
 						finalResult = { id: importee }
 					}
@@ -240,26 +252,24 @@ export default function tsConfigPaths({
 				})
 			}
 
-			const { name, isNodeModules } = moduleName
-
 			if (isNodeModules) {
-				if (logLevel === "debug") {
-					console.log(formatLog("info", PLUGIN_NAME, `${importee} -> ${name}`))
+				if (logLevel === "debug" && target) {
+					console.log(formatLog("info", PLUGIN_NAME, `${importee} -> ${moduleName}`))
 				}
-				return this.resolve(name, importer, { skipSelf: true }).then(resolved => {
-					let finalResult: PartialResolvedId = resolved
+				return this.resolve(moduleName, importer, { skipSelf: true }).then(resolved => {
+					let finalResult: PartialResolvedId | null = resolved
 					if (!finalResult) {
-						finalResult = { id: name }
+						finalResult = { id: moduleName }
 					}
 					return finalResult
 				})
 			}
 
-			if (logLevel === "debug") {
-				console.log(formatLog("info", PLUGIN_NAME, `${importee} -> ${name}`))
+			if (logLevel === "debug" && target) {
+				console.log(formatLog("info", PLUGIN_NAME, `${importee} -> ${moduleName}`))
 			}
 
-			return name
+			return moduleName
 		},
 	}
 }
