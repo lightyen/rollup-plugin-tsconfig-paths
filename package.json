@@ -1,0 +1,49 @@
+{
+  "name": "rollup-plugin-tsconfig-paths",
+  "version": "1.0.0",
+  "description": "Rollup plugin for resolving tsconfig paths",
+  "license": "MIT",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "typings/index.d.ts",
+  "author": "lightyen",
+  "repository": {
+    "url": "https://github.com/lightyen/rollup-plugin-tsconfig-paths"
+  },
+  "homepage": "https://github.com/lightyen/rollup-plugin-tsconfig-paths#readme",
+  "scripts": {
+    "test": "jest",
+    "build": "rollup -c",
+    "prepare": "jest && rollup -c"
+  },
+  "keywords": [
+    "rollup",
+    "plugin",
+    "typescript",
+    "tsconfig",
+    "paths"
+  ],
+  "peerDependencies": {
+    "typescript": "^4"
+  },
+  "devDependencies": {
+    "@babel/core": "7.15.0",
+    "@babel/preset-typescript": "7.15.0",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-node-resolve": "13.0.4",
+    "@types/jest": "27.0.1",
+    "@types/node": "^16.7.10",
+    "jest": "27.2.0",
+    "rollup": "^2.56.3",
+    "ts-jest": "27.0.5",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.0.2"
+  },
+  "files": [
+    "dist",
+    "typings",
+    "LICENSE",
+    "README.md"
+  ]
+}

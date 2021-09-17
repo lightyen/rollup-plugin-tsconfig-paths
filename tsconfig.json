@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "removeComments": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "types": ["@types/node", "@types/jest"],
+    "baseUrl": "."
+  },
+  "include": ["src/**/*"]
+}
