@@ -160,6 +160,10 @@ export function resolveModuleName({
 }): { name: string; isNodeModules: boolean } | undefined {
 	const matched = findMatch(request, mappings)
 	if (!matched) {
+		const result = ts.resolveModuleName(request, importer, compilerOptions, host)
+		if (result?.resolvedModule && result.resolvedModule.resolvedFileName.indexOf("node_modules/") === -1) {
+			return { name: result.resolvedModule.resolvedFileName, isNodeModules: false }
+		}
 		return undefined
 	}
 
