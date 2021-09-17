@@ -22,7 +22,7 @@ import commonjs from "@rollup/plugin-commonjs"
 export default {
   plugins: [
     tsPaths(),
-    nodeResolve(),
+    nodeResolve({ extensions: [".tsx", ".ts", ".jsx", ".js", ".json", ...] }),
     commonjs(),
   ]
 }

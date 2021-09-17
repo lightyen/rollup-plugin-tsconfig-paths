@@ -107,8 +107,8 @@ export function createMappings({
 		mappings.push({
 			wildcard: wildcard !== -1,
 			pattern,
-			prefix: pattern.slice(0, wildcard),
-			suffix: pattern.slice(wildcard + 1),
+			prefix: pattern.substr(0, wildcard),
+			suffix: pattern.substr(wildcard + 1),
 			targets,
 		})
 	}
@@ -145,8 +145,8 @@ export function findMatch(moduleName: string, mappings: Mapping[]): Mapping | un
 	return matched
 }
 
-export function containNodeModules(path: string) {
-	return path.indexOf("/node_modules/") !== -1
+export function containNodeModules(str: string) {
+	return str.indexOf(path.sep + "node_modules" + path.sep) !== -1
 }
 
 export function resolveModuleName({
@@ -164,22 +164,6 @@ export function resolveModuleName({
 }): { moduleName?: string; isNodeModules?: boolean; pattern?: Mapping; target?: string } {
 	const matched = findMatch(request, mappings)
 	if (!matched) {
-		const result = ts.resolveModuleName(request, importer, compilerOptions, host)
-		if (result?.resolvedModule) {
-			const resolvedModuleName = result.resolvedModule.resolvedFileName
-			const isNodeModules = containNodeModules(resolvedModuleName)
-			if (resolvedModuleName.endsWith(".d.ts")) {
-				const extensions = [".js", ".jsx"]
-				for (let i = 0; i < extensions.length; i++) {
-					const guess = resolvedModuleName.replace(/\.d\.ts$/, extensions[i])
-					if (fs.existsSync(guess)) {
-						return { moduleName: guess, isNodeModules }
-					}
-				}
-				return {}
-			}
-			return { moduleName: isNodeModules ? request : resolvedModuleName, isNodeModules }
-		}
 		return {}
 	}
 
@@ -195,7 +179,7 @@ export function resolveModuleName({
 		// NOTE: resolve module path with typescript API
 		const result = ts.resolveModuleName(moduleName, importer, compilerOptions, host)
 		if (result?.resolvedModule) {
-			const resolvedModuleName = result.resolvedModule.resolvedFileName
+			const resolvedModuleName = path.normalize(result.resolvedModule.resolvedFileName)
 			return {
 				moduleName: resolvedModuleName,
 				isNodeModules,

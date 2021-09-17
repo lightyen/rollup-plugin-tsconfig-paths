@@ -3,8 +3,7 @@
     "strict": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "types": ["@types/node", "@types/jest"],
-    "baseUrl": "."
+    "types": ["@types/node", "@types/jest"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "tests/**/*"]
 }
