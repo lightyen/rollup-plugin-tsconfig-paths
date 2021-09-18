@@ -196,6 +196,14 @@ export function resolveModuleName({
 	return { pattern: matched }
 }
 
+export const dtsExcludedHost: ts.ModuleResolutionHost = {
+	...ts.sys,
+	fileExists(filename) {
+		if (filename.endsWith(ts.Extension.Dts)) return false
+		return ts.sys.fileExists(filename)
+	},
+}
+
 export default function tsConfigPaths({
 	tsConfigPath = process.env["TS_NODE_PROJECT"] || ts.findConfigFile(".", ts.sys.fileExists) || "tsconfig.json",
 	logLevel = "warn",
@@ -222,7 +230,7 @@ export default function tsConfigPaths({
 				mappings,
 				request: importee,
 				importer,
-				host: ts.sys,
+				host: dtsExcludedHost,
 			})
 
 			if (!moduleName) {

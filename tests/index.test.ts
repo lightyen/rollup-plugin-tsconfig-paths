@@ -1,4 +1,4 @@
-import { createMappings, findMatch, getTsConfig, resolveModuleName } from "../src"
+import { createMappings, dtsExcludedHost, findMatch, getTsConfig, resolveModuleName } from "../src"
 import ts from "typescript"
 import path from "path"
 
@@ -76,7 +76,7 @@ test("resolving paths", async () => {
 	const opts = {
 		mappings,
 		compilerOptions,
-		host: ts.sys,
+		host: dtsExcludedHost,
 		importer: path.resolve(__dirname, "t0", "index.ts"),
 		request: "~/hello",
 	}
