@@ -2,6 +2,14 @@ import { createMappings, findMatch, getTsConfig, resolveModuleName } from "../sr
 import ts from "typescript"
 import path from "path"
 
+test("read config", async () => {
+	const compilerOptions = getTsConfig(path.resolve(__dirname, "bad.tsconfig.json"), "TEST", ts.sys)
+	expect(compilerOptions).toBeTruthy()
+	expect(compilerOptions.baseUrl).toBeTruthy()
+	expect(compilerOptions.paths).toBeTruthy()
+	expect(!(compilerOptions.paths instanceof Array)).toBeTruthy()
+})
+
 test("path mappings", async () => {
 	let mappings = createMappings({
 		paths: {
