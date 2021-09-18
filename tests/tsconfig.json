@@ -9,6 +9,7 @@
       "~/*": ["./t0/*"],
       "@xxx/*/xxx": ["./t0/xyz/*/xyz"],
       "@xxx/*": ["./t0/abc/*"],
+      "#m/*": ["./t0/abc/*", "./t0/xyz/*/xyz"],
       "roll": ["../node_modules/rollup"]
     }
   }

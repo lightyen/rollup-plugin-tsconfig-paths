@@ -103,6 +103,18 @@ test("resolving paths", async () => {
 	expect(result.moduleName).toBeTruthy()
 	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "abc/fff.js"))
 
+	opts.request = "#m/abc"
+	result = resolveModuleName(opts)
+	expect(result.isNodeModules).toBeFalsy()
+	expect(result.moduleName).toBeTruthy()
+	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "xyz/abc/xyz.ts"))
+
+	opts.request = "#m/fff"
+	result = resolveModuleName(opts)
+	expect(result.isNodeModules).toBeFalsy()
+	expect(result.moduleName).toBeTruthy()
+	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "abc/fff.js"))
+
 	opts.request = "@xxx/ggg.svg"
 	result = resolveModuleName(opts)
 	expect(result.isNodeModules).toBeFalsy()
