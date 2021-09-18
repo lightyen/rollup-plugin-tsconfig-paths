@@ -85,6 +85,12 @@ test("resolving paths", async () => {
 	expect(result.moduleName).toBeTruthy()
 	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "hello.ts"))
 
+	opts.request = "~/qqq/hello"
+	result = resolveModuleName(opts)
+	expect(result.isNodeModules).toBeFalsy()
+	expect(result.moduleName).toBeTruthy()
+	expect(path.resolve(__dirname, "t0", "qqq/hello.js").startsWith(result.moduleName!)).toBe(true)
+
 	opts.request = "@xxx/abc/xxx"
 	result = resolveModuleName(opts)
 	expect(result.isNodeModules).toBeFalsy()
