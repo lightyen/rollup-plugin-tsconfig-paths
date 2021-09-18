@@ -1,9 +1,10 @@
-import { createMappings, dtsExcludedHost, findMatch, getTsConfig, resolveModuleName } from "../src"
+import { createMappings, dtsExcludedHost, findMatch, getTsConfig, resolveModuleName } from "../src/paths"
 import ts from "typescript"
 import path from "path"
+import fs from "fs"
 
 test("read config", async () => {
-	const compilerOptions = getTsConfig(path.resolve(__dirname, "bad.tsconfig.json"), "TEST", ts.sys)
+	const compilerOptions = getTsConfig(path.resolve(__dirname, "bad.tsconfig.json"), ts.sys)
 	expect(compilerOptions).toBeTruthy()
 	expect(compilerOptions.baseUrl).toBeTruthy()
 	expect(compilerOptions.paths).toBeTruthy()
@@ -71,77 +72,47 @@ test("path mappings", async () => {
 })
 
 test("resolving paths", async () => {
-	let compilerOptions = getTsConfig(path.resolve(__dirname, "tsconfig.json"), "TEST", ts.sys)
+	let compilerOptions = getTsConfig(path.resolve(__dirname, "tsconfig.json"), ts.sys)
 	let mappings = createMappings({ paths: compilerOptions.paths! })
-	const opts = {
+	const opts: Parameters<typeof resolveModuleName>[0] = {
 		mappings,
 		compilerOptions,
 		host: dtsExcludedHost,
 		importer: path.resolve(__dirname, "t0", "index.ts"),
-		request: "~/hello",
+		request: "",
 	}
-	let result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeFalsy()
-	expect(result.moduleName).toBeTruthy()
-	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "hello.ts"))
+
+	opts.request = "~/hello"
+	expect(resolveModuleName(opts)).toEqual(path.resolve(__dirname, "t0", "hello.ts"))
 
 	opts.request = "~/qqq/hello"
-	result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeFalsy()
-	expect(result.moduleName).toBeTruthy()
-	expect(path.resolve(__dirname, "t0", "qqq/hello.js").startsWith(result.moduleName!)).toBe(true)
+	expect(resolveModuleName(opts)).toEqual(require.resolve(path.join(__dirname, "t0", "qqq/hello.js")))
 
 	opts.request = "@xxx/abc/xxx"
-	result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeFalsy()
-	expect(result.moduleName).toBeTruthy()
-	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "xyz/abc/xyz.ts"))
+	expect(resolveModuleName(opts)).toEqual(path.resolve(__dirname, "t0", "xyz/abc/xyz.ts"))
 
 	opts.request = "@xxx/fff"
-	result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeFalsy()
-	expect(result.moduleName).toBeTruthy()
-	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "abc/fff.js"))
+	expect(resolveModuleName(opts)).toEqual(path.resolve(__dirname, "t0", "abc/fff.js"))
 
 	opts.request = "#m/abc"
-	result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeFalsy()
-	expect(result.moduleName).toBeTruthy()
-	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "xyz/abc/xyz.ts"))
+	expect(resolveModuleName(opts)).toEqual(path.resolve(__dirname, "t0", "xyz/abc/xyz.ts"))
 
 	opts.request = "#m/fff"
-	result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeFalsy()
-	expect(result.moduleName).toBeTruthy()
-	expect(result.moduleName!).toEqual(path.resolve(__dirname, "t0", "abc/fff.js"))
+	expect(resolveModuleName(opts)).toEqual(path.resolve(__dirname, "t0", "abc/fff.js"))
 
 	opts.request = "@xxx/ggg.svg"
-	result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeFalsy()
-	expect(result.moduleName).toBeTruthy()
-	expect(path.normalize(result.moduleName!)).toEqual(path.resolve(__dirname, "t0", "abc/ggg.svg"))
+	opts.falllback = moduleName => (fs.existsSync(moduleName) ? moduleName : undefined)
+	expect(resolveModuleName(opts)).toEqual(path.resolve(__dirname, "t0", "abc/ggg.svg"))
 
 	opts.request = "@xxx/App.tsx"
-	result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeFalsy()
-	expect(result.moduleName).toBeTruthy()
-	expect(path.normalize(result.moduleName!)).toEqual(path.resolve(__dirname, "t0", "abc/App.tsx"))
+	expect(resolveModuleName(opts)).toEqual(path.resolve(__dirname, "t0", "abc/App.tsx"))
 
 	opts.request = "roll"
-	result = resolveModuleName(opts)
-	expect(result.isNodeModules).toBeTruthy()
-	expect(result.moduleName).toBeTruthy()
-	expect(result.pattern).toBeTruthy()
-	expect(result.target).toBeTruthy()
-	expect(result.pattern?.prefix).toEqual("")
-	expect(result.pattern?.suffix).toEqual("roll")
-	expect(require.resolve("rollup").startsWith(result.moduleName!)).toBe(true)
+	expect(resolveModuleName(opts)).toEqual(require.resolve("rollup"))
 
-	opts.request = path.resolve(__dirname, "t0/abc/App.tsx")
-	result = resolveModuleName(opts)
-	expect(result.moduleName).toBeFalsy()
+	opts.request = "./t0/abc/App"
+	expect(resolveModuleName(opts)).toBeFalsy()
 
 	opts.request = "rollup"
-	result = resolveModuleName(opts)
-	expect(result.moduleName).toBeFalsy()
+	expect(resolveModuleName(opts)).toBeFalsy()
 })

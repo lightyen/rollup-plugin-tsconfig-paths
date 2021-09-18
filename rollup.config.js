@@ -25,9 +25,9 @@ export default [
 				extensions: [".js", ".ts"],
 				exclude: "node_modules/**",
 			}),
-			nodeResolve(),
+			nodeResolve({ extensions: [".ts"] }),
 			commonjs(),
 		],
-		external: ["fs", "path", "typescript", "@rollup/plugin-node-resolve", "chokidar"],
+		external: ["fs", "path", "typescript"],
 	},
 ]
