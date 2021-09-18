@@ -204,7 +204,7 @@ export const dtsExcludedHost: ts.ModuleResolutionHost = {
 	},
 }
 
-export default function tsConfigPaths({
+export function tsConfigPaths({
 	tsConfigPath = process.env["TS_NODE_PROJECT"] || ts.findConfigFile(".", ts.sys.fileExists) || "tsconfig.json",
 	logLevel = "warn",
 }: PluginOptions = {}): Plugin {
@@ -265,3 +265,5 @@ export default function tsConfigPaths({
 		},
 	}
 }
+
+export default tsConfigPaths
