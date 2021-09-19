@@ -7,22 +7,24 @@ import { LogLevel, formatLog, PLUGIN_NAME } from "./log"
 interface PluginOptions {
 	tsConfigPath?: string
 	logLevel?: LogLevel
+	colors?: boolean
 }
 
 export function tsConfigPaths({
 	tsConfigPath = process.env["TS_NODE_PROJECT"] || ts.findConfigFile(".", ts.sys.fileExists) || "tsconfig.json",
 	logLevel = "warn",
+	colors = true,
 }: PluginOptions = {}): Plugin {
 	if (logLevel === "debug") {
-		console.log(formatLog("info", `typescript version: ${ts.version}`))
+		console.log(formatLog("info", `typescript version: ${ts.version}`, colors))
 	}
-	let compilerOptions = getTsConfig(tsConfigPath, ts.sys)
-	let mappings = createMappings({ paths: compilerOptions.paths!, logLevel })
+	let compilerOptions = getTsConfig({ tsConfigPath, host: ts.sys, colors })
+	let mappings = createMappings({ paths: compilerOptions.paths!, logLevel, colors })
 	return {
 		name: PLUGIN_NAME,
 		buildStart() {
-			compilerOptions = getTsConfig(tsConfigPath, ts.sys)
-			mappings = createMappings({ paths: compilerOptions.paths!, logLevel })
+			compilerOptions = getTsConfig({ tsConfigPath, host: ts.sys, colors })
+			mappings = createMappings({ paths: compilerOptions.paths!, logLevel, colors })
 			return
 		},
 		async resolveId(request: string, importer?: string) {
@@ -45,7 +47,7 @@ export function tsConfigPaths({
 			}
 
 			if (logLevel === "debug") {
-				console.log(formatLog("info", `${request} -> ${moduleName}`))
+				console.log(formatLog("info", `${request} -> ${moduleName}`, colors))
 			}
 
 			return moduleName
