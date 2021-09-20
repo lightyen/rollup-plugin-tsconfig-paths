@@ -5,5 +5,5 @@
     "esModuleInterop": true,
     "types": ["@types/node", "@types/jest"]
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["src/**/*"]
 }

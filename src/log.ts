@@ -2,7 +2,15 @@ export const PLUGIN_NAME = "tsconfig-paths"
 
 export type LogLevel = "warn" | "debug" | "none"
 
-export function formatLog(level: "error" | "warn" | "info", value: unknown, colors = true) {
+export function formatLog({
+	level,
+	value,
+	colors = true,
+}: {
+	level: "error" | "warn" | "info"
+	value: unknown
+	colors?: boolean
+}) {
 	let message = ""
 	switch (level) {
 		case "error":

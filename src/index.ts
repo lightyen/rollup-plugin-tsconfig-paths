@@ -1,30 +1,48 @@
 import type { Plugin } from "rollup"
 import ts from "typescript"
 import fs from "fs"
-import { getTsConfig, createMappings, dtsExcludedHost, resolveModuleName } from "./paths"
+import { createHandler } from "typescript-paths"
 import { LogLevel, formatLog, PLUGIN_NAME } from "./log"
 
 interface PluginOptions {
-	tsConfigPath?: string
+	tsConfigPath?: string | string[]
 	logLevel?: LogLevel
 	colors?: boolean
+	strict?: boolean
+	respectCoreModule?: boolean
 }
 
 export function tsConfigPaths({
-	tsConfigPath = process.env["TS_NODE_PROJECT"] || ts.findConfigFile(".", ts.sys.fileExists) || "tsconfig.json",
+	tsConfigPath,
+	respectCoreModule,
+	strict,
 	logLevel = "warn",
 	colors = true,
 }: PluginOptions = {}): Plugin {
 	if (logLevel === "debug") {
-		console.log(formatLog("info", `typescript version: ${ts.version}`, colors))
+		console.log(formatLog({ level: "info", value: `typescript version: ${ts.version}`, colors }))
 	}
-	let compilerOptions = getTsConfig({ tsConfigPath, host: ts.sys, colors })
-	let mappings = createMappings({ paths: compilerOptions.paths!, logLevel, colors })
+
+	let handler = createHandler({
+		tsConfigPath,
+		logLevel,
+		colors,
+		respectCoreModule,
+		loggerID: PLUGIN_NAME,
+		falllback: moduleName => (fs.existsSync(moduleName) ? moduleName : undefined),
+	})
+
 	return {
 		name: PLUGIN_NAME,
 		buildStart() {
-			compilerOptions = getTsConfig({ tsConfigPath, host: ts.sys, colors })
-			mappings = createMappings({ paths: compilerOptions.paths!, logLevel, colors })
+			handler = createHandler({
+				tsConfigPath,
+				logLevel,
+				colors,
+				strict,
+				respectCoreModule,
+				falllback: moduleName => (fs.existsSync(moduleName) ? moduleName : undefined),
+			})
 			return
 		},
 		async resolveId(request: string, importer?: string) {
@@ -32,22 +50,13 @@ export function tsConfigPaths({
 				return null
 			}
 
-			const moduleName = resolveModuleName({
-				compilerOptions,
-				mappings,
-				request,
-				importer,
-				host: dtsExcludedHost,
-				// NOTE: For those are not modules, ex: css, fonts...etc.
-				falllback: moduleName => (fs.existsSync(moduleName) ? moduleName : undefined),
-			})
-
+			const moduleName = handler?.(request, importer)
 			if (!moduleName) {
 				return this.resolve(request, importer, { skipSelf: true })
 			}
 
 			if (logLevel === "debug") {
-				console.log(formatLog("info", `${request} -> ${moduleName}`, colors))
+				console.log(formatLog({ level: "info", value: `${request} -> ${moduleName}`, colors }))
 			}
 
 			return moduleName

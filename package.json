@@ -23,6 +23,9 @@
     "tsconfig",
     "paths"
   ],
+  "dependencies": {
+    "typescript-paths": "1.0.0"
+  },
   "peerDependencies": {
     "typescript": "^4"
   },
