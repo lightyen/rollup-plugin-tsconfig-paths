@@ -41,6 +41,7 @@ export function tsConfigPaths({
 				colors,
 				strict,
 				respectCoreModule,
+				loggerID: PLUGIN_NAME,
 				falllback: moduleName => (fs.existsSync(moduleName) ? moduleName : undefined),
 			})
 			return
