@@ -25,7 +25,7 @@
     "paths"
   ],
   "dependencies": {
-    "typescript-paths": "1.0.0"
+    "typescript-paths": "1.1.0"
   },
   "peerDependencies": {
     "typescript": "^4"

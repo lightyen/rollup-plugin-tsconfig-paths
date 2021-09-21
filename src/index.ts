@@ -1,12 +1,13 @@
 import type { Plugin } from "rollup"
 import ts from "typescript"
 import fs from "fs"
-import { createHandler } from "typescript-paths"
-import { LogLevel, formatLog, PLUGIN_NAME } from "./log"
+import { convertLogLevel, createHandler, createLogger, LogLevel, LogLevelString } from "typescript-paths"
+
+const PLUGIN_NAME = "tsconfig-paths"
 
 interface PluginOptions {
 	tsConfigPath?: string | string[]
-	logLevel?: LogLevel
+	logLevel?: LogLevelString
 	colors?: boolean
 	strict?: boolean
 	respectCoreModule?: boolean
@@ -16,32 +17,21 @@ export function tsConfigPaths({
 	tsConfigPath,
 	respectCoreModule,
 	strict,
-	logLevel = "warn",
+	logLevel = "info",
 	colors = true,
 }: PluginOptions = {}): Plugin {
-	if (logLevel === "debug") {
-		console.log(formatLog({ level: "info", value: `typescript version: ${ts.version}`, colors }))
-	}
-
-	let handler = createHandler({
-		tsConfigPath,
-		logLevel,
-		colors,
-		respectCoreModule,
-		loggerID: PLUGIN_NAME,
-		falllback: moduleName => (fs.existsSync(moduleName) ? moduleName : undefined),
-	})
-
+	let log: ReturnType<typeof createLogger>
+	let handler: ReturnType<typeof createHandler>
 	return {
 		name: PLUGIN_NAME,
 		buildStart() {
+			log = createLogger({ logLevel: convertLogLevel(logLevel), colors, ID: PLUGIN_NAME })
+			log(LogLevel.Debug, `typescript version: ${ts.version}`)
 			handler = createHandler({
+				log,
 				tsConfigPath,
-				logLevel,
-				colors,
 				strict,
 				respectCoreModule,
-				loggerID: PLUGIN_NAME,
 				falllback: moduleName => (fs.existsSync(moduleName) ? moduleName : undefined),
 			})
 			return
@@ -56,9 +46,7 @@ export function tsConfigPaths({
 				return this.resolve(request, importer, { skipSelf: true })
 			}
 
-			if (logLevel === "debug") {
-				console.log(formatLog({ level: "info", value: `${request} -> ${moduleName}`, colors }))
-			}
+			log(LogLevel.Debug, `${request} -> ${moduleName}`)
 
 			return moduleName
 		},

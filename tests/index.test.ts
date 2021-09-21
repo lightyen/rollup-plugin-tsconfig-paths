@@ -1,9 +1,12 @@
-import { createHandler } from "typescript-paths"
+import { createHandler, createLogger, LogLevel } from "typescript-paths"
 import path from "path"
 import fs from "fs"
 
+const log = createLogger({ logLevel: LogLevel.None })
+
 test("resolving paths", async () => {
 	const handler = createHandler({
+		log,
 		tsConfigPath: [path.resolve(__dirname, "t0/tsconfig.json")],
 		falllback: moduleName => (fs.existsSync(moduleName) ? moduleName : undefined),
 	})

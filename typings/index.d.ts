@@ -2,7 +2,7 @@ import type { Plugin } from "rollup"
 
 interface TsConfigPathsOpitons {
 	tsConfigPath: string | string[]
-	logLevel: "warn" | "debug" | "none"
+	logLevel: "none" | "error" | "warn" | "info" | "debug" | "trace"
 	colors: boolean
 	strict: boolean
 	respectCoreModule: boolean
