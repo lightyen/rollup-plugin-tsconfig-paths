@@ -24,9 +24,6 @@
     "tsconfig",
     "paths"
   ],
-  "dependencies": {
-    "typescript-paths": "1.1.0"
-  },
   "peerDependencies": {
     "typescript": "^4"
   },
@@ -44,7 +41,8 @@
     "rollup": "^2.56.3",
     "ts-jest": "27.0.5",
     "ts-node": "^10.2.1",
-    "typescript": "^4.0.2"
+    "typescript": "^4.4.3",
+    "typescript-paths": "^1.1.1"
   },
   "files": [
     "dist",

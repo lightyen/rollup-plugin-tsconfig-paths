@@ -3404,15 +3404,15 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript-paths@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/typescript-paths/-/typescript-paths-1.1.0.tgz#249389da6121202a6cc0a0930e356423c6d2df1d"
-  integrity sha512-QM5Qgg4gvv0Lw0q9jfYCGuE4cw9gkJDIheScG6UT0MkuZotWKK6A5YzoRDKCTDcT9R77KctTMKkBskwF88NzhQ==
+typescript-paths@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/typescript-paths/-/typescript-paths-1.1.1.tgz#d912ded4d353d78106c51c2b30ac663e67b4c0e0"
+  integrity sha512-PAIlvyiYyepSAVRU0gxu+CZKmBUJQFiovpKTnbukjpJvJoS5Vv8oj543SdhWYxSaN+3jIbiNZe4tHBbmwYNz9g==
 
-typescript@^4.0.2:
-  version "4.2.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.4.tgz#8610b59747de028fda898a8aef0e103f156d0961"
-  integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
+typescript@^4.4.3:
+  version "4.4.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-4.4.3.tgz#bdc5407caa2b109efd4f82fe130656f977a29324"
+  integrity sha512-4xfscpisVgqqDfPaJo5vkd+Qd/ItkoagnHpufr+i2QCHBsNYp+G7UAoyFl8aPtx879u38wPV65rZ8qbGZijalA==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
