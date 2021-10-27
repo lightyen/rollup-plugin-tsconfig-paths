@@ -3404,10 +3404,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript-paths@1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/typescript-paths/-/typescript-paths-1.1.4.tgz#e2e3881eb8a78e3d9735b77c294587d9a3521083"
-  integrity sha512-/K/nyZ4Dxb740MPejICfXhbYA2rzbsXmUk8NESaR91PRbr0kCTmguH5/CehK6MamT5QNpw1UWZJyF6okSpyxdw==
+typescript-paths@1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/typescript-paths/-/typescript-paths-1.1.5.tgz#a9d9287ccebca4402d8dfd0a23ff99ed5d676c50"
+  integrity sha512-dCXBW78tbnXQwYZ2/KN1J5qe3vn+pfwxMdaDvLj7qjYqq5GT0MU/OFWiNu6oItet52SxQGj+a4OjFJE4nl/1fw==
 
 typescript@^4.4.3:
   version "4.4.3"

@@ -15,7 +15,8 @@
     "test": "jest",
     "build": "rollup -c",
     "format": "prettier --config .prettierrc.yml --write {src,tests}/**/*.{ts,js,json}",
-    "prepare": "jest && rollup -c"
+    "prepare": "jest && rollup -c",
+    "doit": "yarn upgrade-interactive --latest"
   },
   "keywords": [
     "rollup",
@@ -42,7 +43,7 @@
     "ts-jest": "27.0.5",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3",
-    "typescript-paths": "1.1.4"
+    "typescript-paths": "1.1.5"
   },
   "files": [
     "dist",

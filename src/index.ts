@@ -1,12 +1,13 @@
 import type { Plugin } from "rollup"
 import ts from "typescript"
 import fs from "fs"
-import { convertLogLevel, createHandler, createLogger, LogLevel, LogLevelString } from "typescript-paths"
+import type { LogLevelString, TsConfigPayload } from "typescript-paths"
+import { convertLogLevel, createHandler, createLogger, LogLevel } from "typescript-paths"
 
 const PLUGIN_NAME = "tsconfig-paths"
 
 interface PluginOptions {
-	tsConfigPath?: string | string[]
+	tsConfigPath?: string | string[] | TsConfigPayload | TsConfigPayload[]
 	logLevel?: LogLevelString
 	colors?: boolean
 	strict?: boolean
