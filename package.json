@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-tsconfig-paths",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Rollup plugin for resolving tsconfig paths",
   "license": "MIT",
   "main": "dist/index.cjs.js",
