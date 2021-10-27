@@ -1,7 +1,8 @@
 import type { Plugin } from "rollup"
+import type { TsConfigPayload } from "typescript-paths"
 
 interface TsConfigPathsOpitons {
-	tsConfigPath: string | string[]
+	tsConfigPath: string | string[] | TsConfigPayload | TsConfigPayload[]
 	logLevel: "none" | "error" | "warn" | "info" | "debug" | "trace"
 	colors: boolean
 	strict: boolean
