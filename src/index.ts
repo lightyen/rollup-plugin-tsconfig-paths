@@ -1,23 +1,16 @@
 import type { Plugin } from "rollup"
 import ts from "typescript"
 import fs from "fs"
-import type { LogLevelString, TsConfigPayload } from "typescript-paths"
+import type { Options } from "typescript-paths"
 import { convertLogLevel, createHandler, createLogger, LogLevel } from "typescript-paths"
 
 const PLUGIN_NAME = "tsconfig-paths"
 
-interface PluginOptions {
-	tsConfigPath?: string | string[] | TsConfigPayload | TsConfigPayload[]
-	logLevel?: LogLevelString
-	colors?: boolean
-	strict?: boolean
-	respectCoreModule?: boolean
-}
+export type PluginOptions = Omit<Options, "loggerID">
 
 export function tsConfigPaths({
 	tsConfigPath,
 	respectCoreModule,
-	strict,
 	logLevel = "info",
 	colors = true,
 }: PluginOptions = {}): Plugin {
@@ -31,7 +24,6 @@ export function tsConfigPaths({
 			handler = createHandler({
 				log,
 				tsConfigPath,
-				strict,
 				respectCoreModule,
 				falllback: moduleName => (fs.existsSync(moduleName) ? moduleName : undefined),
 			})

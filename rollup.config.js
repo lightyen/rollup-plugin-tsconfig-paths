@@ -26,6 +26,6 @@ export default [
 			nodeResolve({ extensions: [".ts"] }),
 			commonjs(),
 		],
-		external: ["fs", "path", "typescript"],
+		external: ["fs", "path", "typescript", "typescript-paths"],
 	},
 ]

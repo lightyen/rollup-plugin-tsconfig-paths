@@ -3,7 +3,10 @@
     "strict": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "types": ["@types/node", "@types/jest"]
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "types": ["@types/node", "@types/jest"],
+    "outDir": "typings"
   },
   "include": ["src/**/*"]
 }
