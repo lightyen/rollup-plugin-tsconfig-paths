@@ -1,12 +1,12 @@
 import type { Plugin } from "rollup"
 import ts from "typescript"
 import fs from "fs"
-import type { Options } from "typescript-paths"
+import type { RegisterOptions } from "typescript-paths"
 import { convertLogLevel, createHandler, createLogger, LogLevel } from "typescript-paths"
 
 const PLUGIN_NAME = "tsconfig-paths"
 
-export type PluginOptions = Omit<Options, "loggerID">
+export type PluginOptions = Omit<RegisterOptions, "loggerID">
 
 export function tsConfigPaths({
 	tsConfigPath,

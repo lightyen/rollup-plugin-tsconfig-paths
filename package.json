@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-tsconfig-paths",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Rollup plugin for resolving tsconfig paths",
   "license": "MIT",
   "main": "dist/index.cjs.js",
@@ -12,11 +12,11 @@
   },
   "homepage": "https://github.com/lightyen/rollup-plugin-tsconfig-paths#readme",
   "scripts": {
-    "types": "tsc --project tsconfig.json",
+    "types": "tsc --project tsconfig.json --declaration --emitDeclarationOnly --outDir typings",
     "test": "jest",
     "build": "rollup -c",
     "format": "prettier --config .prettierrc.yml --write {src,tests,typings}/**/*",
-    "prepare": "jest && rollup -c && yarn types && yarn format",
+    "prepare": "jest && yarn build && yarn types && yarn format",
     "doit": "yarn upgrade-interactive --latest"
   },
   "keywords": [
@@ -27,10 +27,10 @@
     "paths"
   ],
   "dependencies": {
-    "typescript-paths": "^1.2.1"
+    "typescript-paths": "^1.2.2"
   },
   "peerDependencies": {
-    "typescript": "^4"
+    "typescript": "^4.1.2"
   },
   "devDependencies": {
     "@babel/core": "7.15.8",
