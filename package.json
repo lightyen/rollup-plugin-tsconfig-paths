@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-tsconfig-paths",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Rollup plugin for resolving tsconfig paths",
   "license": "MIT",
   "main": "dist/index.cjs.js",
@@ -27,7 +27,7 @@
     "paths"
   ],
   "dependencies": {
-    "typescript-paths": "^1.2.2"
+    "typescript-paths": "^1.2.3"
   },
   "peerDependencies": {
     "typescript": "^4.1.2"
